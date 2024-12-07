@@ -1,48 +1,51 @@
-from pathlib import Path
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
+
+"""TODO
+"""
+from utils.web_connection import make_chrome_browser
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-from time import sleep
+# from utils.tags import web_driver_options
+from utils import tags
 
 
-ROOT_FOLDER = Path(__file__).parent
-
-# When the function start with "MAKE" --> This is an factory
-# Just return the object
+URL = "https://bhissdigital.pbh.gov.br/creditoIPTU/apropriarCredito.jsp"
 
 
-# https://peter.sh/experiments/chromium-command-line-switches/
+class Main():
+    """Whrite
+    """
 
-def make_chrome_brower(*options: str) -> webdriver.Chrome:
-    chrome_options = webdriver.ChromeOptions()
+    def __init__(self, url):
+        self.url = url
 
-    if options is not None:
-        for option in options:
-            chrome_options.add_argument(option)
+    def get_connection(self):
+        options = tags.web_driver_options()
+        driver = make_chrome_browser(*options)
+        driver.get(self.url)
 
-    driver = webdriver.Chrome(service=ChromeService(
-        ChromeDriverManager().install()), options=chrome_options)
-
-    return driver
+        search_credit = tags.wait_for_element_by_tag_name_selector(
+            driver, "//*[@id='navbar']/ul/li[2]/a", 10)
+        search_credit.send_key(Keys.ENTER)
 
 
 if __name__ == '__main__':
-    TIME_TO_WAIT = 10
+
+    browser = Main(URL)
+    browser.get_connection()
+
+    # Select the ...
+
+    # run.get("https://google.com.br")
+
     # options = ('--headless', '--disable-gpu')
     # browser = make_chrome_brower(*options)
-    browser = make_chrome_brower()
-    browser.get("http://google.com")
 
-    search_input = WebDriverWait(browser, TIME_TO_WAIT).until(
-        EC.presence_of_element_located(
-            (By.ID, 'APjFqb')
-        )
-    )
+    # url = "https://google.com.br"
+    # driver = WebConnection.
+    # print(driver)
 
-    search_input.send_keys("God is good")
-    search_input.send_keys(Keys.ENTER)
-    sleep(TIME_TO_WAIT)
+    # driver.get("https://bhissdigital.pbh.gov.br/creditoIPTU/apropriarCredito.jsp")
+
+    # search_input.send_keys("God is good")
+    # search_input.send_keys(Keys.ENTER)
+
+    # sleep(TIME_TO_WAIT)
