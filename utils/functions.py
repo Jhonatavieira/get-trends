@@ -3,7 +3,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 # from time import sleep
 
-# TIMEOUT = 2
+timeout = 2
 
 
 def web_driver_options():
@@ -33,8 +33,23 @@ def web_driver_options():
     return options
 
 
-def wait_for_element_by_tag_name_selector(driver, selector, timeout):
-    return WebDriverWait(driver, timeout).until(
-        EC.presence_of_element_located((By.XPATH, selector)),
-        'Could not find element with selector "{}"'.format(selector)
-    )
+locator_map = { 
+
+    'id': By.ID, 
+    'name': By.NAME, 
+    'xpath': By.XPATH, 
+    'class': By.CLASS_NAME
+}
+
+def find_element(driver, element, selector):
+    try:
+        locator = locator_map.get(element.lower())
+        if locator:            
+            return WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((locator, selector)),
+            'Could not find element with selector "{}"'.format(selector)
+        )
+        else:
+            raise ValueError(f"Locator strategy '{element}' not supported.")
+    except: 
+        raise ValueError("Error during to find some element page")

@@ -4,10 +4,14 @@
 from utils.web_connection import make_chrome_browser
 from selenium.webdriver.common.keys import Keys
 # from utils.tags import web_driver_options
-from utils import tags
+from utils import functions
+# from time import sleep
 
 
 URL = "https://bhissdigital.pbh.gov.br/creditoIPTU/apropriarCredito.jsp"
+ID = "id"
+CLASS = "class"
+XPATH = "xpath"
 
 
 class Main():
@@ -16,21 +20,41 @@ class Main():
 
     def __init__(self, url):
         self.url = url
+        self.driver = "None"
 
-    def get_connection(self):
-        options = tags.web_driver_options()
-        driver = make_chrome_browser(*options)
-        driver.get(self.url)
+    def run(self):
+        """Start application"""
+        options = functions.web_driver_options()
+        self.driver = make_chrome_browser(*options)
+        self.driver.get(self.url)
+        
+    def web_manipulation(self):
 
-        search_credit = tags.wait_for_element_by_tag_name_selector(
-            driver, "//*[@id='navbar']/ul/li[2]/a", 10)
-        search_credit.send_key(Keys.ENTER)
+        search_credit = functions.find_element(
+            self.driver, XPATH, "//*[@id='navbar']/ul/li[2]/a")
+        search_credit.send_keys(Keys.ENTER)
+
+        # Write the CPF on the lable     
+        insert_cpf = functions.find_element(self.driver, ID, "CPF")
+        insert_cpf.send_keys("01542287618")
+
+        # Click on the button Credit Search
+        credit_search = functions.find_element(self.driver, ID, "consultar")
+        credit_search.send_keys(Keys.ENTER)
+
+        # Find text 
+        user_message = functions.find_element(self.driver, CLASS, "text-justify")
+        text_infor = user_message.text
+        print(text_infor)
+
+        
 
 
 if __name__ == '__main__':
 
-    browser = Main(URL)
-    browser.get_connection()
+    start = Main(URL)
+    start.run()
+    start.web_manipulation()
 
     # Select the ...
 
